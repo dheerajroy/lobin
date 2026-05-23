@@ -1,0 +1,300 @@
+# =========================================================
+# LOBIN CONFIGURATION FILE
+# =========================================================
+#
+# This file controls the complete behavior of Lobin.
+#
+# Start Lobin using:
+#
+#   ./lobin -config ./config.yaml
+#
+# =========================================================
+
+
+
+# =========================================================
+# SERVER CONFIGURATION
+# =========================================================
+server:
+
+  # Port on which Lobin listens.
+  #
+  # Example:
+  #   port: 8000
+  #
+  # Access:
+  #   http://localhost:8000
+  #
+  # If TLS is enabled:
+  #   https://localhost:8443
+  #
+  port: 8000
+
+
+
+# =========================================================
+# LOAD BALANCING STRATEGY
+# =========================================================
+#
+# Available options:
+#
+#   round_robin
+#   weighted_round_robin
+#   least_connections
+#
+# Explanation:
+#
+# round_robin:
+#   Requests rotate evenly across all upstreams.
+#
+# weighted_round_robin:
+#   Upstreams receive traffic proportional to weight.
+#
+# least_connections:
+#   Requests go to upstream with least active requests.
+#
+strategy: round_robin
+
+
+
+# =========================================================
+# HEALTH CHECK CONFIGURATION
+# =========================================================
+#
+# Lobin periodically checks backend health.
+#
+# If health check fails:
+#   upstream becomes inactive
+#
+# If health check succeeds again:
+#   upstream becomes active
+#
+health_check:
+
+  # Time between health checks.
+  #
+  # Examples:
+  #   5s
+  #   10s
+  #   30s
+  #
+  interval: 10s
+
+  # Maximum wait time before health check fails.
+  #
+  # Examples:
+  #   2s
+  #   5s
+  #
+  timeout: 5s
+
+
+
+# =========================================================
+# FRONTEND TLS CONFIGURATION
+# =========================================================
+#
+# Controls whether Lobin itself serves HTTPS.
+#
+# =========================================================
+#
+# HTTP MODE
+#
+# Client --> HTTP --> Lobin --> Backend
+#
+# tls:
+#   enabled: false
+#
+# =========================================================
+#
+# HTTPS / TLS TERMINATION MODE
+#
+# Client --> HTTPS --> Lobin --> Backend
+#
+# tls:
+#   enabled: true
+#   cert_file: ./server.crt
+#   key_file: ./server.key
+#
+# =========================================================
+#
+# Generate local certificates:
+#
+# openssl req -x509 -newkey rsa:4096 \
+# -keyout server.key \
+# -out server.crt \
+# -days 365 \
+# -nodes
+#
+# =========================================================
+
+tls:
+
+  # HTTP mode currently enabled.
+  #
+  enabled: false
+
+  # Path to TLS certificate.
+  #
+  # Example:
+  # cert_file: ./server.crt
+  #
+  # cert_file: /etc/lobin/server.crt
+  #
+  # cert_file: ./certs/server.crt
+  #
+  # cert_file: ./server.crt
+
+  # Path to TLS private key.
+  #
+  # Example:
+  # key_file: ./server.key
+  #
+  # key_file: /etc/lobin/server.key
+  #
+  # key_file: ./certs/server.key
+  #
+  # key_file: ./server.key
+
+
+
+# =========================================================
+# BACKEND TLS CONFIGURATION
+# =========================================================
+#
+# Controls whether Lobin connects to upstreams
+# using HTTPS.
+#
+# =========================================================
+#
+# DISABLED
+#
+# Client --> HTTPS --> Lobin --> HTTP --> Backend
+#
+# backend_tls:
+#   enabled: false
+#
+# =========================================================
+#
+# ENABLED
+#
+# Client --> HTTPS --> Lobin --> HTTPS --> Backend
+#
+# backend_tls:
+#   enabled: true
+#
+# =========================================================
+#
+# Useful when:
+#
+# - backend servers expose HTTPS
+# - zero trust environments
+# - production internal encryption
+#
+# =========================================================
+
+backend_tls:
+
+  # Currently disabled.
+  #
+  enabled: false
+
+  # ONLY for development/testing.
+  #
+  # When true:
+  #   skips TLS certificate validation
+  #
+  # Never use true in production.
+  #
+  # Production:
+  #   insecure_skip_verify: false
+  #
+  insecure_skip_verify: true
+
+
+
+# =========================================================
+# UPSTREAM SERVERS
+# =========================================================
+#
+# Backend servers where traffic is forwarded.
+#
+# =========================================================
+#
+# URL FORMAT
+#
+# IMPORTANT:
+#
+# Do NOT include:
+#
+#   http://
+#   https://
+#
+# Lobin automatically chooses:
+#
+# HTTP  -> if backend_tls.enabled = false
+# HTTPS -> if backend_tls.enabled = true
+#
+# =========================================================
+
+upstreams:
+
+  # =======================================================
+  # UPSTREAM 1
+  # =======================================================
+  - url: localhost:8001
+
+    # Weight used by weighted_round_robin strategy.
+    #
+    # Higher weight = more traffic.
+    #
+    # Example:
+    #
+    # upstream1 weight: 1
+    # upstream2 weight: 2
+    #
+    # Traffic distribution:
+    #
+    # upstream1 -> 33%
+    # upstream2 -> 66%
+    #
+    weight: 1
+
+    # Health check endpoint.
+    #
+    # Lobin periodically calls:
+    #
+    # http://localhost:8001/health
+    #
+    # or:
+    #
+    # https://localhost:8001/health
+    #
+    health_check_path: /health
+
+
+
+  # =======================================================
+  # UPSTREAM 2
+  # =======================================================
+  - url: localhost:8002
+
+    weight: 1
+
+    health_check_path: /health
+
+
+
+# =========================================================
+# LOGGING CONFIGURATION
+# =========================================================
+
+logging:
+
+  # Available options:
+  #
+  # debug
+  # info
+  # error
+  #
+  level: debug
