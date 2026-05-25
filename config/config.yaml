@@ -53,7 +53,7 @@ server:
 # least_connections:
 #   Requests go to upstream with least active requests.
 #
-strategy: round_robin
+strategy: weighted_round_robin
 
 
 
@@ -264,7 +264,7 @@ upstreams:
     #
     # Default: 1
     #
-    # weight: 1
+    weight: 2
 
     # Health check endpoint.
     #
