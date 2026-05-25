@@ -36,6 +36,11 @@ func (s *Server) getActiveUpstreams() []*upstream.Upstream {
 }
 
 func (s *Server) loadBalancerHandler(w http.ResponseWriter, r *http.Request) {
+	if r.RequestURI == "/favicon.ico" {
+		http.Error(w, "Not Found", http.StatusNotFound)
+		return
+	}
+
 	activeUpstreams := s.getActiveUpstreams()
 	upstream, err := s.strategy.Select(activeUpstreams)
 	if err != nil {

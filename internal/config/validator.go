@@ -22,10 +22,6 @@ func Validate(cfg *Config) error {
 			return err
 		}
 
-		if up.Weight <= 0 {
-			return errors.New("weight must be > 0")
-		}
-
 		if up.HealthCheckPath == "" {
 			return errors.New("health check path required")
 		}
