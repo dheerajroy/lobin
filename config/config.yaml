@@ -244,11 +244,15 @@ upstreams:
   # =======================================================
   - url: localhost:8001
 
-    # Weight used by weighted_round_robin strategy.
+    # Weight parameter - ONLY USED by 'weighted_round_robin' strategy
     #
-    # Higher weight = more traffic.
+    # Optional: If not specified, defaults to 1
     #
-    # Example:
+    # If strategy is 'round_robin' or 'least_connections', this value is ignored.
+    #
+    # Higher weight = more traffic (only for weighted_round_robin).
+    #
+    # Example with weighted_round_robin:
     #
     # upstream1 weight: 1
     # upstream2 weight: 2
@@ -258,7 +262,9 @@ upstreams:
     # upstream1 -> 33%
     # upstream2 -> 66%
     #
-    weight: 1
+    # Default: 1
+    #
+    # weight: 1
 
     # Health check endpoint.
     #
@@ -279,6 +285,9 @@ upstreams:
   # =======================================================
   - url: localhost:8002
 
+    # Weight parameter - ONLY USED by 'weighted_round_robin' strategy
+    # If strategy is 'round_robin' or 'least_connections', this value is ignored.
+    # Default: 1
     weight: 1
 
     health_check_path: /health

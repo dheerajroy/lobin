@@ -121,11 +121,17 @@ Define your backend servers:
 upstreams:
   - url: http://localhost:8001
     health_check_path: /health  # Endpoint to check
-    weight: 1                   # Weight (used by weighted_round_robin)
+    weight: 1                   # Weight (optional, default: 1)
   - url: http://localhost:8002
     health_check_path: /health
     weight: 2                   # This backend gets 2x more traffic
 ```
+
+**Weight Configuration:**
+- `weight` is optional - defaults to 1 if not specified
+- Only used by `weighted_round_robin` strategy
+- Ignored by `round_robin` and `least_connections` strategies
+- Higher weight = more traffic (proportional distribution)
 
 #### TLS Configuration
 

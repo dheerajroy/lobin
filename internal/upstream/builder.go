@@ -55,6 +55,10 @@ func BuildFromConfig(
 			cfg.HealthCheck.Timeout,
 		)
 
+		if u.Weight <= 0 {
+			u.Weight = 1
+		}
+
 		u.Proxy = proxy
 
 		upstreams = append(upstreams, u)
